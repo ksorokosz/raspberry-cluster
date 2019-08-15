@@ -30,7 +30,7 @@
 
 - name: Install Docker packages
   apt:
-    name: ['docker-ce']
+    name: ['docker-ce', 'docker-compose']
     state: present
     install_recommends: no
     force_apt_get: yes
@@ -43,9 +43,3 @@
     append: yes
   become_user: root
 
-- name: Install Docker-compose
-  pip:
-    name:
-      - pip 
-      - docker-compose
-  become_user: root
