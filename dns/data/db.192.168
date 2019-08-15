@@ -1,0 +1,19 @@
+$TTL    604800
+@    IN    SOA    dns.k8s.cluster.com. admin.k8s.cluster.com. (
+             2019081523    ; Serial
+             604800        ; Refresh
+              86400        ; Retry
+            2419200        ; Expire
+             604800 )    ; Negative Cache TTL
+;
+
+; name servers - NS records
+
+@   IN    NS    dns.k8s.cluster.com.
+
+; PTR records
+
+103.0      IN  PTR dns.k8s.cluster.com.
+100.0      IN  PTR master1.k8s.cluster.com.
+102.0      IN  PTR master3.k8s.cluster.com.
+104.0      IN  PTR master4.k8s.cluster.com.

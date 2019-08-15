@@ -2,6 +2,7 @@
     forward . 8.8.8.8 9.9.9.9
     log
     errors
+    file /root/db.192.168  168.192.in-addr.arpa
 }
 
 k8s.cluster.com:53 {
