@@ -1,0 +1,51 @@
+---
+# tasks file for roles/docker
+
+- name: "INFO | host {{ ansible_ssh_host }}"
+  debug:
+    msg: |
+       System: {{ ansible_system }}
+       OS Family: {{ linux_architecture }}
+       Distribution: {{ ansible_distribution }}
+       Release: {{ ansible_distribution_release }}
+       Architecture: {{ ansible_architecture }}
+
+- name: Add Docker GPG key
+  apt_key: url=https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg
+  become_user: root
+
+- name: Install basic list of packages
+  apt:
+    name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2','software-properties-common', 'python-dev', 'python-pip', 'python-setuptools', 'libffi-dev', 'libssl-dev']
+    state: present
+    update_cache: yes
+    install_recommends: no
+    force_apt_get: yes
+  become_user: root
+
+- name: Add Docker APT repository
+  apt_repository:
+    repo: deb [arch={{ linux_architecture }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable
+  become_user: root
+
+- name: Install Docker packages
+  apt:
+    name: ['docker-ce']
+    state: present
+    install_recommends: no
+    force_apt_get: yes
+  become_user: root
+
+- name: Add user to docker group
+  user:
+    name: "{{ ansible_ssh_user }}"
+    groups: "docker"
+    append: yes
+  become_user: root
+
+- name: Install Docker-compose
+  pip:
+    name:
+      - pip 
+      - docker-compose
+  become_user: root
