@@ -1,15 +1,14 @@
 version: '3'
 
 services:
-  dnsbind:
+  dnscore:
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
-    image: dnsbind:latest
+    image: dnscore:latest
     ports:
     - "53:53/udp"
-    - "53:53/tcp"
-    - "10000:10000/tcp"
+    command: -conf /root/Corefile
     volumes:
-    - $HOME/bind:/data
+    - ./data:/root
