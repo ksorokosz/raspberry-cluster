@@ -1,0 +1,11 @@
+---
+# tasks file for roles/k8s
+
+- name: "INFO | host {{ ansible_ssh_host }}"
+  debug:
+    msg: |
+       System: {{ ansible_system }}
+       OS Family: {{ linux_architecture }}
+       Distribution: {{ ansible_distribution }}
+       Release: {{ ansible_distribution_release }}
+       Architecture: {{ ansible_architecture }}
