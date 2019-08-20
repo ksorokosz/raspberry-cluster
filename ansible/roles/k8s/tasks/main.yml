@@ -17,6 +17,13 @@
   ignore_errors: True
   become_user: root
 
+- name: "PREPARE | Pass bridged IPv4 traffic to iptables' chains"
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    state: present
+  become_user: root
+
 - name: "PREPARE | Remove existing cgroup set"
   lineinfile:
     path: /boot/cmdline.txt

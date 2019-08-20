@@ -11,6 +11,7 @@
        Distribution: {{ ansible_distribution }}
        Release: {{ ansible_distribution_release }}
        Architecture: {{ ansible_architecture }}
+       IPV4: {{ ansible_default_ipv4.address }}
 
 - name: "RESET | Reset Kubernetes Master"
   shell: kubeadm reset -f
