@@ -1,6 +1,8 @@
 ---
 # tasks file for roles/k8s
 
+# reference: https://medium.com/nycdev/k8s-on-pi-9cc14843d43
+
 - name: "INFO | host {{ ansible_ssh_host }}"
   debug:
     msg: |
@@ -9,3 +11,43 @@
        Distribution: {{ ansible_distribution }}
        Release: {{ ansible_distribution_release }}
        Architecture: {{ ansible_architecture }}
+
+- name: "PREPARE | Disable Swap"
+  shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove
+  ignore_errors: True
+  become_user: root
+
+- name: "PREPARE | Remove existing cgroup set"
+  lineinfile:
+    path: /boot/cmdline.txt
+    regexp: '^(.*) cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory$'
+    backrefs: yes
+    line: '\1'
+  become_user: root
+
+- name: "PREPARE | Add cgroup set"
+  lineinfile:
+    path: /boot/cmdline.txt
+    regexp: '^(.*)$'
+    backrefs: yes
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+  become_user: root
+
+- name: "PREPARE | Add kubernetes GPG key"
+  apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  become_user: root
+
+- name: "PREPARE | Add Kuberbetes APT repository"
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+  become_user: root
+
+- name: "INSTALL | Install kubernetes packages"
+  apt:
+    name: ['kubeadm', 'kubelet', 'kubectl']
+    state: present
+    update_cache: yes
+    install_recommends: no
+    force_apt_get: yes
+  become_user: root
+

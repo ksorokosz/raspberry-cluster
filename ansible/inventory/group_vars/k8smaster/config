@@ -1,0 +1,12 @@
+
+# Kubernetes version
+kubernetes_version: "v1.15.3"
+
+token: udy29x.ugyyk3tumg27atmr
+
+podnet: 10.244.0.0/16
+
+flannel_version: "master"
+
+resolv_nameservers:
+ - 192.168.0.103

@@ -3,3 +3,5 @@
   roles:
   - { role: docker, become: yes, become_user: "{{ ansible_ssh_user }}" }
   - { role: k8s, become: yes, become_user: "{{ ansible_ssh_user }}" }
+  - { role: resolv, become: yes, become_user: "{{ ansible_ssh_user }}" }
+  - { role: cluster, become: yes, become_user: "{{ ansible_ssh_user }}" }
