@@ -9,10 +9,14 @@
        Distribution: {{ ansible_distribution }}
        Release: {{ ansible_distribution_release }}
        Architecture: {{ ansible_architecture }}
+  tags:
+    - docker
 
 - name: Add Docker GPG key
   apt_key: url=https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg
   become_user: root
+  tags:
+    - docker
 
 - name: Install basic list of packages
   apt:
@@ -22,11 +26,16 @@
     install_recommends: no
     force_apt_get: yes
   become_user: root
+  tags:
+    - docker
+    - system
 
 - name: Add Docker APT repository
   apt_repository:
     repo: deb [arch={{ linux_architecture }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable
   become_user: root
+  tags:
+    - docker
 
 - name: Install Docker packages
   apt:
@@ -35,11 +44,15 @@
     install_recommends: no
     force_apt_get: yes
   become_user: root
+  tags:
+    - docker
 
 - name: Install Docker packages for python
   pip:
     name: ['docker', "docker-compose"]
   become_user: root
+  tags:
+    - docker
 
 - name: Add user to docker group
   user:
@@ -47,4 +60,20 @@
     groups: "docker"
     append: yes
   become_user: root
+  tags:
+    - docker
 
+- name: Change hostname
+  shell: "raspi-config nonint do_hostname {{ hostname }}"
+  become_user: root
+  tags:
+    - docker
+    - system
+    - raspberrypi
+
+- name: Reboot
+  reboot:
+    msg: "Reboot by ansible. Wait for returning..."
+  become_user: root
+  tags:
+    - system

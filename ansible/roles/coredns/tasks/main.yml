@@ -5,9 +5,13 @@
   copy:
     src: dns
     dest: /home/{{ ansible_ssh_user }}
+  tags:
+    - dns
 
 - name: "Run docker compose with DNS definition"
   docker_compose:
     project_src: /home/{{ ansible_ssh_user }}/dns
     build: yes
+  tags:
+    - dns
 

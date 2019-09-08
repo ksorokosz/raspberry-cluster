@@ -11,11 +11,15 @@
        Distribution: {{ ansible_distribution }}
        Release: {{ ansible_distribution_release }}
        Architecture: {{ ansible_architecture }}
+  tags:
+    - k8s
 
 - name: "PREPARE | Disable Swap"
   shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove
   ignore_errors: True
   become_user: root
+  tags:
+    - k8s
 
 - name: "PREPARE | Pass bridged IPv4 traffic to iptables' chains"
   sysctl:
@@ -23,6 +27,8 @@
     value: 1
     state: present
   become_user: root
+  tags:
+    - k8s
 
 - name: "PREPARE | Remove existing cgroup set"
   lineinfile:
@@ -31,6 +37,8 @@
     backrefs: yes
     line: '\1'
   become_user: root
+  tags:
+    - k8s
 
 - name: "PREPARE | Add cgroup set"
   lineinfile:
@@ -39,15 +47,21 @@
     backrefs: yes
     line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
   become_user: root
+  tags:
+    - k8s
 
 - name: "PREPARE | Add kubernetes GPG key"
   apt_key: url=https://packages.cloud.google.com/apt/doc/apt-key.gpg
   become_user: root
+  tags:
+    - k8s
 
 - name: "PREPARE | Add Kuberbetes APT repository"
   apt_repository:
     repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
   become_user: root
+  tags:
+    - k8s
 
 - name: "INSTALL | Install kubernetes packages"
   apt:
@@ -57,4 +71,6 @@
     install_recommends: no
     force_apt_get: yes
   become_user: root
+  tags:
+    - k8s
 

@@ -5,3 +5,5 @@
     dest: "/etc/resolv.conf"
     mode: "0644"
   become_user: root
+  tags:
+   - resolv
