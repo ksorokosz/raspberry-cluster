@@ -1,3 +1,4 @@
+---
 
 # Kubernetes version
 kubernetes_version: "v1.15.3"
@@ -9,4 +10,4 @@ podnet: 10.244.0.0/16
 flannel_version: "master"
 
 resolv_nameservers:
- - 192.168.0.103
+ - 192.168.0.50

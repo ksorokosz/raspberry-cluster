@@ -36,6 +36,11 @@
     force_apt_get: yes
   become_user: root
 
+- name: Install Docker packages for python
+  pip:
+    name: ['docker', "docker-compose"]
+  become_user: root
+
 - name: Add user to docker group
   user:
     name: "{{ ansible_ssh_user }}"

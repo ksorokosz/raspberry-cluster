@@ -1,4 +1,10 @@
-- hosts: all
+- hosts: dnsnodes
+  gather_facts: yes
+  roles:
+  - { role: docker, become: yes, become_user: "{{ ansible_ssh_user }}" }
+  - { role: coredns, become: yes, become_user: "{{ ansible_ssh_user }}" }
+
+- hosts: kubernetes
   gather_facts: yes
   roles:
   - { role: docker, become: yes, become_user: "{{ ansible_ssh_user }}" }

@@ -1,0 +1,11 @@
+---
+# tasks file for roles/dummy
+
+- name: "INFO"
+  debug:
+    var: hostvars[inventory_hostname].group_names
+
+- name: "INFO"
+  debug:
+    msg: |
+       Host: {{ ansible_ssh_host }}

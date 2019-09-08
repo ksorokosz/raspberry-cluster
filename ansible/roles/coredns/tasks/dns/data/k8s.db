@@ -1,0 +1,5 @@
+k8s.cluster.com.        IN  SOA dns.k8s.cluster.com. admin.k8s.cluster.com. 2019081541 7200 3600 1209600 3600
+dns.k8s.cluster.com.    IN  A   192.168.0.50
+master1.k8s.cluster.com.   IN  A   192.168.0.101
+master2.k8s.cluster.com.   IN  A   192.168.0.102
+master3.k8s.cluster.com.   IN  A   192.168.0.103
