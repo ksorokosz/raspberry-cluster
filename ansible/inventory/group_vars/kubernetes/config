@@ -3,7 +3,9 @@
 # Kubernetes version
 kubernetes_version: "v1.15.3"
 
-token: udy29x.ugyyk3tumg27atmr
+token: 69ed18.ccfss6dkqpuhqsu9
+token_sha256: sha256:08321d8f715c1e6a0c92cf7912c9d753153a5ccf439d3e7a78c4c0bf1bf19edf
+certificate_key: "Sq18ZJDotBJSk5izTgbVg"
 
 podnet: 10.244.0.0/16
 

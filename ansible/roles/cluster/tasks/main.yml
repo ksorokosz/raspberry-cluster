@@ -15,6 +15,15 @@
   tags:
     - cluster
 
+- name: "Install ca package on debian systems"
+  apt:
+    name: ca-certificates
+    state: present
+    update_cache: yes
+  become_user: root
+  tags:
+    - cluster
+
 - name: "RESET | Reset Kubernetes Master"
   shell: kubeadm reset -f
   register: kubeadm_reset
@@ -22,38 +31,47 @@
   tags:
     - cluster
 
+- name: Deploy Docker daemon.json.
+  copy:
+    src: files/daemon.json
+    dest: /etc/docker/daemon.json
+  become_user: root
+  tags:
+    - cluster
+
+- name: Ensure docker deamon is restarted
+  service:
+    name: docker
+    state: restarted
+  become_user: root
+  tags:
+    - cluster
+
+- name: "DEBUG | Initialize cluster"
+  debug:
+    msg: kubeadm init --apiserver-advertise-address={{ ansible_default_ipv4.address }} --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }} --upload-certs
+  tags:
+    - cluster
+
 - name: "INIT | Initialize Master {{ kubernetes_version }}"
-  shell: kubeadm init --apiserver-advertise-address={{ ansible_default_ipv4.address }} --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }}
+  shell: kubeadm init --apiserver-advertise-address={{ ansible_default_ipv4.address }} --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }} --upload-certs
   register: kubeadm_init
   when: kubeadm_reset is succeeded
   become_user: root
   tags:
     - cluster
 
-- name: "INIT | Create Kubernetes config directory"
-  file:
-    path: /root/.kube/
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  become_user: root
-  tags:
-    - cluster
-
-- name: "INIT | Copy admin.conf to config directory"
+- name: copy certificate authority to trusted ca path of the os
   copy:
-    src: /etc/kubernetes/admin.conf
-    dest: /root/.kube/config
+    src: '{{ item }}'
+    dest: '/usr/local/share/ca-certificates'
     owner: root
     group: root
-    mode: 0755
-    remote_src: yes
-    backup: yes
-  when: kubeadm_init
-  become_user: root 
-  tags:
-    - cluster
+    mode: 0644
+  with_fileglob:
+    - /etc/kubernetes/pki/ca.crt
+  notify:
+    - update trusted ca debian
 
 - name: "INIT | Create Kubernetes config directory"
   file:
@@ -82,14 +100,20 @@
 
 - name: "DEBUG | Joining cluster"
   debug:
-    msg: kubeadm join --ignore-preflight-errors=all --token {{ token }} master1.k8s.cluster.com:6443 --discovery-token-unsafe-skip-ca-verification
+    msg: kubeadm join --ignore-preflight-errors=all --token {{ token }} --discovery-token-ca-cert-hash {{ token_sha256 }} master1.k8s.cluster.com:6443
   tags:
-    - cluster
+    - worker
 
 - name: "INIT | Join Kubernetes Cluster"
-  shell: kubeadm join --ignore-preflight-errors=all --token {{ token }} master1.k8s.cluster.com:6443 --discovery-token-unsafe-skip-ca-verification
+  shell: kubeadm join --ignore-preflight-errors=all --token {{ token }} --discovery-token-ca-cert-hash {{ token_sha256 }} master1.k8s.cluster.com:6443
   when: kubeadm_reset is succeeded
   register: kubeadm_join
+  become_user: root
+  tags:
+    - worker
+
+- name: "INIT | Remove flannel link"
+  shell: "ip link delete flannel.1"
   become_user: root
   tags:
     - cluster
@@ -111,3 +135,4 @@
   become_user: root
   tags:
     - cluster
+
