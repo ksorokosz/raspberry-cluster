@@ -12,3 +12,8 @@
   - { role: resolv, become: yes, become_user: "{{ ansible_ssh_user }}" }
   - { role: cluster, become: yes, become_user: "{{ ansible_ssh_user }}" }
 
+
+- hosts: local
+  gather_facts: yes
+  roles:
+  - { role: filebeat, become: yes, become_user: "{{ ansible_ssh_user }}" }

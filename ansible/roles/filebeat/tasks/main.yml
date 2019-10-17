@@ -1,0 +1,47 @@
+---
+# tasks file for roles/docker
+
+- name: "INFO | host {{ ansible_ssh_host }}"
+  debug:
+    msg: |
+       System: {{ ansible_system }}
+       OS Family: {{ linux_architecture }}
+       Distribution: {{ ansible_distribution }}
+       Release: {{ ansible_distribution_release }}
+       Architecture: {{ ansible_architecture }}
+  tags:
+    - filebeat
+
+- name: Add filebeat GPG key
+  apt_key: url=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+  become_user: root
+  tags:
+    - filebeat
+
+- name: Install basic list of packages
+  apt:
+    name: ['apt-transport-https']
+    state: present
+    update_cache: yes
+    install_recommends: no
+    force_apt_get: yes
+  become_user: root
+  tags:
+    - filebeat
+
+- name: Add filebeat APT repository
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+  become_user: root
+  tags:
+    - filebeat
+
+- name: Install filebeat packages
+  apt:
+    name: ['filebeat']
+    state: present
+    install_recommends: no
+    force_apt_get: yes
+  become_user: root
+  tags:
+    - filebeat
