@@ -1,0 +1,17 @@
+---
+# tasks file for roles/coredns
+
+- name: "Copy docker-compose for NGINX"
+  copy:
+    src: nginx
+    dest: /home/{{ ansible_ssh_user }}
+  tags:
+    - nginx
+
+- name: "Run docker compose with NGINX definition"
+  docker_compose:
+    project_src: /home/{{ ansible_ssh_user }}/nginx
+    build: yes
+  tags:
+    - nginx
+

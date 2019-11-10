@@ -3,17 +3,28 @@
   roles:
   - { role: docker, become: yes, become_user: "{{ ansible_ssh_user }}" }
   - { role: coredns, become: yes, become_user: "{{ ansible_ssh_user }}" }
+  - { role: nginx, become: yes, become_user: "{{ ansible_ssh_user }}" }
 
 - hosts: kubernetes
   gather_facts: yes
   roles:
   - { role: docker, become: yes, become_user: "{{ ansible_ssh_user }}" }
-  - { role: k8s, become: yes, become_user: "{{ ansible_ssh_user }}" }
+  - { role: install, become: yes, become_user: "{{ ansible_ssh_user }}" }
   - { role: resolv, become: yes, become_user: "{{ ansible_ssh_user }}" }
-  - { role: cluster, become: yes, become_user: "{{ ansible_ssh_user }}" }
+  - { role: common, become: yes, become_user: "{{ ansible_ssh_user }}" }
 
+- hosts: kubernetes
+  gather_facts: yes
+  roles:
+  - { role: firstmaster, become: yes, become_user: "{{ ansible_ssh_user }}", when: inventory_hostname == 'master1' }
 
-- hosts: local
+- hosts: kubernetes
+  gather_facts: yes
+  serial: 1
+  roles:
+    - { role: joining, become: yes, become_user: "{{ ansible_ssh_user }}", when: inventory_hostname != 'master1' and inventory_hostname.find("master") != -1 }
+
+- hosts: raspberry
   gather_facts: yes
   roles:
   - { role: filebeat, become: yes, become_user: "{{ ansible_ssh_user }}" }

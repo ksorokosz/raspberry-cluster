@@ -1,0 +1,56 @@
+# Only for the first master node
+- name: "DEBUG | Initialize Master {{ kubernetes_version }}"
+  debug:
+    msg: kubeadm init --control-plane-endpoint "{{ lb_address }}:{{ lb_port }}" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }} --certificate-key {{ certificate_key }}
+  tags:
+    - cluster
+    - first
+
+- name: "INIT | Initialize Master {{ kubernetes_version }}"
+  shell: kubeadm init --control-plane-endpoint "{{ lb_address }}:{{ lb_port }}" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }} --certificate-key {{ certificate_key }}
+  register: kubeadm_init
+  become_user: root
+  tags:
+    - cluster
+    - first
+
+- name: "INIT | Get Certificate sha256"
+  shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: token_sha256
+  tags:
+    - cluster
+    - joining
+
+- name: "INIT | Create Kubernetes config directory"
+  file:
+    path: /home/{{ ansible_ssh_user }}/.kube/
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  become_user: root
+  tags:
+    - cluster
+    - first
+
+- name: "INIT | Copy admin.conf to config directory"
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/{{ ansible_ssh_user }}/.kube/config
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: 0755
+    remote_src: yes
+    backup: yes
+  become_user: root
+  tags:
+    - cluster
+    - first
+
+- name: "INIT | Install Flannel (Networking)"
+  shell: "curl -sSL https://rawgit.com/coreos/flannel/master/Documentation/kube-flannel.yml | kubectl create -f -"
+  args:
+    warn: false
+  tags:
+    - cluster
+    - first
