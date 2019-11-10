@@ -14,13 +14,6 @@
   tags:
     - k8s
 
-- name: "PREPARE | Disable Swap"
-  shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove
-  ignore_errors: True
-  become_user: root
-  tags:
-    - k8s
-
 - name: "PREPARE | Pass bridged IPv4 traffic to iptables' chains"
   sysctl:
     name: net.bridge.bridge-nf-call-iptables
@@ -33,7 +26,7 @@
 - name: "PREPARE | Remove existing cgroup set"
   lineinfile:
     path: /boot/cmdline.txt
-    regexp: '^(.*) cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory$'
+    regexp: '^(.*) cgroup_memory=1 cgroup_enable=memory$'
     backrefs: yes
     line: '\1'
   become_user: root

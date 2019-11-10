@@ -1,14 +1,14 @@
 ---
-# tasks file for roles/coredns
+# tasks file for roles/nginx
 
-- name: "Copy docker-compose for DNS"
+- name: "Copy docker-compose for dns"
   copy:
     src: dns
     dest: /home/{{ ansible_ssh_user }}
   tags:
     - dns
 
-- name: "Run docker compose with DNS definition"
+- name: "Run docker compose with dns definition"
   docker_compose:
     project_src: /home/{{ ansible_ssh_user }}/dns
     build: yes

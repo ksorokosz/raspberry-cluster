@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  nginxlb:
+    restart: always
+    extra_hosts:
+    - master1.k8s.cluster.com:192.168.0.101
+    - master2.k8s.cluster.com:192.168.0.102
+    - master3.k8s.cluster.com:192.168.0.103
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nginxlb:latest
+    ports:
+    - "6443:443"

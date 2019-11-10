@@ -13,7 +13,8 @@ $TTL    604800
 
 ; PTR records
 
-50.0      IN  PTR dns.k8s.cluster.com.
+50.0       IN  PTR dns.k8s.cluster.com.
+50.0       IN  PTR lb.k8s.cluster.com.
 101.0      IN  PTR master1.k8s.cluster.com.
-102.0      IN  PTR master3.k8s.cluster.com.
-103.0      IN  PTR master4.k8s.cluster.com.
+102.0      IN  PTR master2.k8s.cluster.com.
+103.0      IN  PTR master3.k8s.cluster.com.
