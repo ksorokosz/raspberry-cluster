@@ -16,7 +16,7 @@
 - hosts: kubernetes
   gather_facts: yes
   roles:
-  - { role: firstmaster, become: yes, become_user: "{{ ansible_ssh_user }}", when: inventory_hostname == 'master1' }
+  - { role: firstmaster, become: yes, become_user: "{{ ansible_ssh_user }}", run_once: true, delegate_to: 'master1' }
 
 - hosts: kubernetes
   gather_facts: yes
