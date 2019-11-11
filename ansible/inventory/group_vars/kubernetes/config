@@ -4,9 +4,11 @@
 kubernetes_version: "v1.16.2"
 
 token: 69ed18.ccfss6dkqpuhqsu9
-token_sha256: sha256:08321d8f715c1e6a0c92cf7912c9d753153a5ccf439d3e7a78c4c0bf1bf19edf
+token_sha256: sha256:5623cdbbfb7b7a3885bb9a3ee954d58aab9bf14b9e6f32db5ae9dc1c4443a5c4
 certificate_key: "Sq18ZJDotBJSk5izTgbVg"
 
+lb_address: 192.168.0.50
+lb_port: 6443
 podnet: 10.244.0.0/16
 
 flannel_version: "master"

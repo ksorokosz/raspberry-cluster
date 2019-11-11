@@ -2,7 +2,6 @@
 # tasks file for roles/cluster
 
 # reference: git clone https://github.com/rak8s/rak8s.git
-# reference: https://medium.com/velotio-perspectives/demystifying-high-availability-in-kubernetes-using-kubeadm-3d83ed8c458b
 # reference: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
 
 - name: "INFO | host {{ ansible_ssh_host }}"
@@ -57,41 +56,36 @@
   tags:
     - cluster
 
-- name: Get cfssl - certificate tool
-  get_url:
-    url: https://pkg.cfssl.org/R1.2/cfssl_linux-arm
-    dest: /usr/local/bin/cfssl
-    mode: '0555'
-  become_user: root
-  tags:
-    - cluster
-
-- name: Get cfssl json - certificate tool for json
-  get_url:
-    url: https://pkg.cfssl.org/R1.2/cfssljson_linux-arm
-    dest: /usr/local/bin/cfssljson
-    mode: '0555'
-  become_user: root
-  tags:
-    - cluster
-
+# Only for the first master node
 - name: "DEBUG | Initialize Master {{ kubernetes_version }}"
   debug:
-    msg: kubeadm init --control-plane-endpoint "192.168.0.50:6443" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }}
+    msg: kubeadm init --control-plane-endpoint "{{ lb_address }}:{{ lb_port }}" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }} --certificate-key {{ certificate_key }}
+  when: kubeadm_reset is succeeded and {{ inventory_hostname }} == 'master1'
   tags:
     - cluster
 
 - name: "INIT | Initialize Master {{ kubernetes_version }}"
-  shell: kubeadm init --control-plane-endpoint "192.168.0.50:6443" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }}
+  shell: kubeadm init --control-plane-endpoint "{{ lb_address }}:{{ lb_port }}" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }}
   register: kubeadm_init
-  when: kubeadm_reset is succeeded
+  when: kubeadm_reset is succeeded and {{ inventory_hostname }} == 'master1'
   become_user: root
   tags:
     - cluster
 
-# TODO only two should join, one should init
+- name: "INIT | Install Flannel (Networking)"
+  shell: "curl -sSL https://rawgit.com/coreos/flannel/master/Documentation/kube-flannel.yml | kubectl create -f -"
+  args:
+    warn: false
+  when: {{ inventory_hostname }} == 'master1'
+  tags:
+    - cluster
+
+
+
+# Join the rest
 - name: "INIT | Join to master {{ kubernetes_version }}"
-  shell: kubeadm join 192.168.0.50:6443 --token 69ed18.ccfss6dkqpuhqsu9 --discovery-token-ca-cert-hash sha256:5623cdbbfb7b7a3885bb9a3ee954d58aab9bf14b9e6f32db5ae9dc1c4443a5c4 --control-plane --certificate-key ee536ea0e30dc1fcd44b67689348502a2e9e5316e8183315f1b5970d07e47f4f
+  shell: kubeadm join 192.168.0.50:6443 --token 69ed18.ccfss6dkqpuhqsu9 --discovery-token-ca-cert-hash {{ token_sha256 }} --control-plane --certificate-key {{ certificate_key }}
+  when: {{ inventory_hostname }} != 'master1'
   become_user: root
   tags:
     - cluster
@@ -121,9 +115,3 @@
   tags:
     - cluster
 
-- name: "INIT | Install Flannel (Networking)"
-  shell: "curl -sSL https://rawgit.com/coreos/flannel/master/Documentation/kube-flannel.yml | kubectl create -f -"
-  args:
-    warn: false
-  tags:
-    - cluster
