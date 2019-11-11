@@ -4,8 +4,7 @@
 kubernetes_version: "v1.16.2"
 
 token: 69ed18.ccfss6dkqpuhqsu9
-token_sha256: sha256:5623cdbbfb7b7a3885bb9a3ee954d58aab9bf14b9e6f32db5ae9dc1c4443a5c4
-certificate_key: "Sq18ZJDotBJSk5izTgbVg"
+certificate_key: ee536ea0e30dc1fcd44b67689348502a2e9e5316e8183315f1b5970d07e47f4f
 
 lb_address: 192.168.0.50
 lb_port: 6443
