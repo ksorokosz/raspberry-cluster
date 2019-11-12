@@ -4,13 +4,13 @@
 # Only for the first master node
 - name: "DEBUG | Initialize Master {{ kubernetes_version }}"
   debug:
-    msg: kubeadm init --control-plane-endpoint "{{ lb_address }}:{{ lb_port }}" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }} --certificate-key {{ certificate_key }}
+    msg: kubeadm init --control-plane-endpoint "{{ lb_address }}:{{ lb_port }}" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --certificate-key {{ certificate_key }}
   tags:
     - cluster
     - first
 
 - name: "INIT | Initialize Master {{ kubernetes_version }}"
-  shell: kubeadm init --control-plane-endpoint "{{ lb_address }}:{{ lb_port }}" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --pod-network-cidr={{ podnet }} --certificate-key {{ certificate_key }}
+  shell: kubeadm init --control-plane-endpoint "{{ lb_address }}:{{ lb_port }}" --upload-certs --apiserver-cert-extra-sans *.k8s.cluster.com --token={{ token }} --kubernetes-version={{ kubernetes_version }} --certificate-key {{ certificate_key }}
   become_user: root
   tags:
     - cluster

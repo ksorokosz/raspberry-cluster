@@ -16,9 +16,9 @@
   tags:
     - cluster
 
-- name: "PREPARE | Install openssl and ca package on debian systems"
+- name: "PREPARE | Install openssl and ca, telnet package on debian systems"
   apt:
-    name: [ ca-certificates, openssl ]
+    name: [ ca-certificates, openssl, telnet ]
     state: present
     update_cache: yes
     force_apt_get: yes
@@ -53,5 +53,12 @@
     name: docker
     state: restarted
   become_user: root
+  tags:
+    - cluster
+
+- name: "INIT | Remove Flannel Link (Networking)"
+  shell: "ip link delete flannel.1"
+  become_user: root
+  ignore_errors: true
   tags:
     - cluster

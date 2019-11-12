@@ -33,6 +33,15 @@ Provisioning was tested on ansible 2.8.3. For running automated provisioning:
 - Add line: `nameserver 192.168.0.50` to a file: /etc/resolvconf/resolv.conf.d/head
 - Restart resolvconf service: `sudo service resolvconf restart`
 
+## Kubernetes Ingress
+
+[Voyager](https://appscode.com/products/voyager/v11.0.1/setup/install/)
+[NGinx](https://kubernetes.github.io/ingress-nginx/deploy/#bare-metal)
+
+## VPN
+
+[RPiVPN](https://opensource.com/article/19/6/raspberry-pi-vpn-server)
+
 ## Check your installation
 
 ### Check DNS
