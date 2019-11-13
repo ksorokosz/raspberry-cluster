@@ -1,0 +1,51 @@
+---
+# tasks file for roles/cluster
+
+# reference: git clone https://github.com/rak8s/rak8s.git
+# reference: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
+
+- name: "INFO | host {{ ansible_ssh_host }}"
+  debug:
+    msg: |
+       System: {{ ansible_system }}
+       OS Family: {{ linux_architecture }}
+       Distribution: {{ ansible_distribution }}
+       Release: {{ ansible_distribution_release }}
+       Architecture: {{ ansible_architecture }}
+       IPV4: {{ ansible_default_ipv4.address }}
+  tags:
+    - cluster
+    - services
+
+- name: "PREPARE | Copy services"
+  copy:
+    src: "{{ item }}"
+    dest: /tmp
+  with_fileglob:
+    - files/*.yaml
+  tags:
+    - cluster
+    - services
+
+- name: "INSTALL | Dashboard"
+  shell: "kubectl apply -f /tmp/dashboard.yaml"
+  tags:
+    - cluster
+    - services
+
+- name: "INSTALL | Hello World"
+  shell: "kubectl apply -f /tmp/helloworld.yaml"
+  tags:
+    - cluster
+    - services
+
+- name: "CLEAN | Delete services files"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "/tmp/*.yaml"
+  tags:
+    - cluster
+    - services
+

@@ -23,3 +23,13 @@
   serial: 1
   roles:
     - { role: joining, become: yes, become_user: "{{ ansible_ssh_user }}", when: inventory_hostname != 'master1' and inventory_hostname.find("master") != -1 }
+
+- hosts: kubernetes
+  gather_facts: yes
+  roles:
+  - { role: finalizing, become: yes, become_user: "{{ ansible_ssh_user }}", when: inventory_hostname.find("master") != -1 }
+
+- hosts: kubernetes
+  gather_facts: yes
+  roles:
+  - { role: initialservices, become: yes, become_user: "{{ ansible_ssh_user }}", run_once: true }

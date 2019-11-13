@@ -26,6 +26,13 @@
   tags:
     - cluster
 
+- name: "RESET | Reset Kubernetes Master"
+  shell: kubeadm reset -f
+  register: kubeadm_reset
+  become_user: root
+  tags:
+    - cluster
+
 - name: "PREPARE | Disable Swap"
   shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove
   ignore_errors: True
@@ -33,9 +40,15 @@
   tags:
     - cluster
 
-- name: "RESET | Reset Kubernetes Master"
-  shell: kubeadm reset -f
-  register: kubeadm_reset
+# Reference: https://github.com/kubernetes/kubernetes/issues/82361
+- name: "PREPARE | Legacy iptables"
+  shell: update-alternatives --set iptables /usr/sbin/iptables-legacy
+  become_user: root
+  tags:
+    - cluster
+
+- name: "PREPARE | Reset iptables"
+  shell: iptables -P INPUT ACCEPT && iptables -P OUTPUT ACCEPT && iptables -P FORWARD ACCEPT && iptables -F
   become_user: root
   tags:
     - cluster
@@ -62,3 +75,11 @@
   ignore_errors: true
   tags:
     - cluster
+
+- name: "INIT | Remove CNI interface (Networking)"
+  shell: "ip link delete cni0"
+  become_user: root
+  ignore_errors: true
+  tags:
+    - cluster
+
