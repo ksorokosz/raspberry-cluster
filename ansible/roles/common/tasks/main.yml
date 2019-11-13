@@ -18,7 +18,7 @@
 
 - name: "PREPARE | Install openssl and ca, telnet package on debian systems"
   apt:
-    name: [ ca-certificates, openssl, telnet ]
+    name: [ ca-certificates, openssl, telnet, tcpdump, ipset, lsof, ipvsadm, swapspace ]
     state: present
     update_cache: yes
     force_apt_get: yes
@@ -26,16 +26,15 @@
   tags:
     - cluster
 
-- name: "RESET | Reset Kubernetes Master"
-  shell: kubeadm reset -f
-  register: kubeadm_reset
+- name: "PREPARE | INSTALL weave diagnostic tool"
+  shell: "curl -L git.io/weave -o /usr/local/bin/weave && chmod +x /usr/local/bin/weave"
   become_user: root
   tags:
     - cluster
 
-- name: "PREPARE | Disable Swap"
-  shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove
-  ignore_errors: True
+- name: "RESET | Reset Kubernetes Master"
+  shell: kubeadm reset -f
+  register: kubeadm_reset
   become_user: root
   tags:
     - cluster
@@ -61,6 +60,12 @@
   tags:
     - cluster
 
+- name: "PREPARE | Sysctl conf"
+  shell: "sysctl -w net.ipv4.ip_nonlocal_bind=1 && systemctl disable dphys-swapfile.service"
+  become_user: root
+  tags:
+    - cluster
+
 - name: "PREPARE | Ensure docker deamon is restarted"
   service:
     name: docker
@@ -69,17 +74,29 @@
   tags:
     - cluster
 
-- name: "INIT | Remove Flannel Link (Networking)"
-  shell: "ip link delete flannel.1"
+- name: "INIT | Weave Reset (Networking)"
+  shell: "weave reset"
+  ignore_errors: true
+  tags:
+    - cluster
+
+- name: "INIT | Reset IPVS interface (Networking)"
+  shell: "ipvsadm --clear"
   become_user: root
   ignore_errors: true
   tags:
     - cluster
 
-- name: "INIT | Remove CNI interface (Networking)"
-  shell: "ip link delete cni0"
+- name: "INIT | Remove IPVS interface (Networking)"
+  shell: "ip link delete kube-ipvs0"
   become_user: root
   ignore_errors: true
   tags:
     - cluster
 
+- name: "PREPARE | Disable Swap"
+  shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove
+  ignore_errors: True
+  become_user: root
+  tags:
+    - cluster

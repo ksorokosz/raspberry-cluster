@@ -5,12 +5,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      run: hellworld
+      run: helloworld
   replicas: 1
   template:
     metadata:
       labels:
-        run: hellworld
+        run: helloworld
     spec:
       containers:
         - name: helloworld
@@ -23,12 +23,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: hellworld-service
+  name: helloworld-service
 spec:
   ports:
   - port: 8080
     protocol: TCP
     targetPort: 8080
   selector:
-    run: hellworld
+    run: helloworld
   type: NodePort
