@@ -16,6 +16,7 @@
   tags:
     - cluster
     - services
+    - helloworld
 
 - name: "PREPARE | Copy services"
   copy:
@@ -26,12 +27,14 @@
   tags:
     - cluster
     - services
+    - helloworld
 
 - name: "INSTALL | Hello World"
   shell: "kubectl apply -f /tmp/helloworld.yaml"
   tags:
     - cluster
     - services
+    - helloworld
 
 - name: "CLEAN | Delete services files"
   file:
@@ -42,4 +45,5 @@
   tags:
     - cluster
     - services
+    - helloworld
 

@@ -16,6 +16,7 @@
   tags:
     - cluster
     - services
+    - jenkins
 
 - name: "PREPARE | Copy services"
   copy:
@@ -26,12 +27,14 @@
   tags:
     - cluster
     - services
+    - jenkins
 
 - name: "INSTALL | Jenkins"
   shell: "kubectl apply -f /tmp/jenkins.yaml"
   tags:
     - cluster
     - services
+    - jenkins
 
 - name: "CLEAN | Delete services files"
   file:
@@ -42,4 +45,5 @@
   tags:
     - cluster
     - services
+    - jenkins
 

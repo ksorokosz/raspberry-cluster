@@ -16,6 +16,7 @@
   tags:
     - cluster
     - services
+    - dashboard
 
 - name: "PREPARE | Copy services"
   copy:
@@ -26,12 +27,14 @@
   tags:
     - cluster
     - services
+    - dashboard
 
 - name: "INSTALL | Dashboard"
   shell: "kubectl apply -f /tmp/dashboard.yaml"
   tags:
     - cluster
     - services
+    - dashboard
 
 - name: "CLEAN | Delete services files"
   file:
@@ -42,4 +45,5 @@
   tags:
     - cluster
     - services
+    - dashboard
 
