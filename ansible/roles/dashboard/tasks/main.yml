@@ -33,12 +33,6 @@
     - cluster
     - services
 
-- name: "INSTALL | Hello World"
-  shell: "kubectl apply -f /tmp/helloworld.yaml"
-  tags:
-    - cluster
-    - services
-
 - name: "CLEAN | Delete services files"
   file:
     path: "{{ item }}"

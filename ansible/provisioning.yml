@@ -32,4 +32,14 @@
 - hosts: kubernetes
   gather_facts: yes
   roles:
-  - { role: initialservices, become: yes, become_user: "{{ ansible_ssh_user }}", run_once: true }
+  - { role: dashboard, become: yes, become_user: "{{ ansible_ssh_user }}", run_once: true }
+
+- hosts: kubernetes
+  gather_facts: yes
+  roles:
+  - { role: helloworld, become: yes, become_user: "{{ ansible_ssh_user }}", run_once: true }
+
+- hosts: kubernetes
+  gather_facts: yes
+  roles:
+  - { role: jenkins, become: yes, become_user: "{{ ansible_ssh_user }}", run_once: true }
