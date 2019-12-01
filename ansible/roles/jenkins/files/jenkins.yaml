@@ -17,7 +17,7 @@ spec:
         run: jenkins
     spec:
       containers:
-      - image: kodbasen/jenkins-arm:2.7.1
+      - image: dahrkael/jenkins-armv7:latest
         imagePullPolicy: IfNotPresent
         name: jenkins
         ports:
